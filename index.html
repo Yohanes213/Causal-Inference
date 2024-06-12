@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gokada Order Tracking</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+    <h1>Track Your Order</h1>
+    <input type="text" id="order_id" placeholder="Enter Order ID" />
+    <button onclick="trackOrder()">Track</button>
+    <div id="map" style="height: 500px;"></div>
+
+    <script>
+        // Initialize the map
+        const map = L.map('map').setView([6.5244, 3.3792], 12); // Centered on Lagos
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18
+        }).addTo(map);
+
+        function trackOrder() {
+            const orderId = document.getElementById('order_id').value;
+            console.log('Tracking order:', orderId); // Debugging
+
+            fetch(`http://127.0.0.1:5000/order/${orderId}`)
+                .then(response => {
+                    console.log('Order response:', response);
+                    if (!response.ok) {
+                        throw new Error('Order not found');
+                    }
+                    return response.json();
+                })
+                .then(order => {
+                    if (order.error) {
+                        alert(order.error);
+                        return;
+                    }
+                    console.log('Order details:', order); // Debugging
+                    const origin = [order[0].origin_lat, order[0].origin_lon];
+                    const dest = [order[0].dest_lat, order[0].dest_lon];
+                    L.marker(origin).addTo(map).bindPopup('Origin').openPopup();
+                    L.marker(dest).addTo(map).bindPopup('Destination').openPopup();
+                })
+                .catch(error => {
+                    console.error('Error fetching order:', error); // Debugging
+                    alert('Order not found');
+                });
+
+            fetch(`http://127.0.0.1:5000/driver/${orderId}`)
+                .then(response => {
+                    console.log('Driver response:', response);
+                    if (!response.ok) {
+                        throw new Error('Driver data not found');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+                    console.log('Driver details:', data); // Debugging
+                    data.accepted_driver.forEach(coord => {
+                        L.marker(coord).addTo(map).bindPopup('Accepted Driver').openPopup();
+                    });
+                    data.rejected_drivers.forEach(coord => {
+                        L.marker(coord).addTo(map).bindPopup('Rejected Driver').openPopup();
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching driver data:', error); // Debugging
+                    alert('Driver data not found');
+                });
+        }
+    </script>
+</body>
+</html>
