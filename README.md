@@ -50,6 +50,9 @@ Gokada, the largest last-mile delivery service in Nigeria, has partnered with mo
 #### Web Application
 Open the index.html file in a web browser. Enter the order_id to visualize the respective driver's location on a map.
 
+![1Screenshot from 2024-06-12 19-21-04](https://github.com/Yohanes213/Causal-Inference/assets/99422479/ab483b84-a12e-41bf-b783-292cc3256541)
+
+
 ### Contributions
 
 Contributions to this project are welcome.
