@@ -44,6 +44,26 @@ class DataPipeline:
         except Exception as e:
             logger.error(f"Error reading the file: {e}")
             return None
+        
+    def save_data(self, df, path):
+        """
+        Save a DataFrame to a file.
+
+        Params:
+            df (pd.DataFrame): The DataFrame to be saved.
+            path (str): The path where the DataFrame should be saved.
+
+        Returns:
+            bool: True if the DataFrame is saved successfully, False otherwise.
+        """
+        try:
+            df.to_csv(path, index=False)
+            logger.info(f"DataFrame has been successfully saved to {path}")
+            return True
+        except Exception as e:
+            logger.error(f"Error saving the DataFrame to {path}: {e}")
+            return False
+
 
     def is_weekend(self, date):
         """
@@ -165,7 +185,7 @@ class DataPipeline:
         """
 
         try:
-            return df[end_time] - df[start_time] / pd.Timedelta(hours=1)
+            return (df[end_time] - df[start_time])/ pd.Timedelta(hours=1)
         except Exception as e:
             logger.error(f"Error Calucation the duration for {start_time} {end_time}: {e}")
 
@@ -192,7 +212,7 @@ class DataPipeline:
             df['Duration (hr)'] = self.calculate_duration(df, start_time_col, end_time_col)
             logger.info(f"Applied duration calculation to DataFrame using {start_time_col} and {end_time_col}")
 
-            df['Speed (km/hr)'] = df['distance'] / df['duration']
+            df['Speed (km/hr)'] = df['Distance (km)'] / df['Duration (hr)']
             logger.info("Calculated speed")
 
             logger.info(f"Distance, duration, and speed calculations applied to {len(df)} rows.")
@@ -231,5 +251,8 @@ if __name__ == "__main__":
         # end_time_col = 'end_time'
 
         df = pipeline.apply_distance_duration(df, origin_cols, destination_cols, date_columns[0], date_columns[1])
-        logger.info("Distance, duration, and speed calculations have been applied to the DataFrame")
+
+        pipeline.save_data(df, 'data/cleaned_nb.csv')
+        #logger.info("Distance, duration, and speed calculations have been applied to the DataFrame")
         print(df.head())  # Display the first few rows of the DataFrame to verify changes
+        print(df.info())
