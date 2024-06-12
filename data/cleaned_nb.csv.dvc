@@ -1,0 +1,5 @@
+outs:
+- md5: 679ee8846fb073166138d97f34dc66c8
+  size: 90096851
+  hash: md5
+  path: cleaned_nb.csv
