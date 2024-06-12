@@ -1,3 +1,4 @@
 pandas
 geopy==2.4.1
 holidays==0.5
+flask==3.0.3
