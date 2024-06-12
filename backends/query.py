@@ -7,3 +7,9 @@ from data_cleaner import DataPipeline
 
 app = Flask(__name__)
 
+pipeline = DataPipeline('Nigeria')
+
+df = pipeline.read_data('data/cleaned_nb.csv')
+
+print(df.head())
+
