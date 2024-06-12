@@ -28,7 +28,7 @@ Gokada, the largest last-mile delivery service in Nigeria, has partnered with mo
 | updated_at  | 0  | float64  |
 
 
-#### Installation
+### Installation
 
 1. Clone the repository:
    ```sh
@@ -40,7 +40,7 @@ Gokada, the largest last-mile delivery service in Nigeria, has partnered with mo
    pip install -r requirements.txt
    ```
 
-#### Usage
+### Usage
 
 ##### Data Cleaning and Processing
   - Run the data cleaning script to preprocess and clean the data:
@@ -50,8 +50,10 @@ Gokada, the largest last-mile delivery service in Nigeria, has partnered with mo
 #### Web Application
 Open the index.html file in a web browser. Enter the order_id to visualize the respective driver's location on a map.
 
-#### Contributions
+### Contributions
+
 Contributions to this project are welcome.
 
-#### License
+### License
+
 This project is licensed under the MIT License.
