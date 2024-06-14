@@ -4,7 +4,7 @@ import sys
 from datetime import datetime
 
 sys.path.append(os.path.abspath(os.path.join("../Causal-Inference/scripts/")))
-from data_cleaner import DataPipeline
+from data_pipeline import DataPipeline
 
 pipeline = DataPipeline('Nigeria')
 
