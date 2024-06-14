@@ -234,7 +234,26 @@ class DataPipeline:
         except Exception as e:
             logger.error(f'Error imputing {column}')
 
+    
+    def remove_outliers(df, column, lower_quantile = 0.25, upper_quantile = 0.75):
+        try:
+            Q1 = df[column].quantile(lower_quantile)
+            Q3 = df[column].quantile(upper_quantile)
 
+            IQR = Q3 - Q1
+
+            lower_bound = Q1 - 1.5 * IQR
+            upper_bound = Q3 + 1.5 * IQR
+
+            df_no_outliers = df[df[column] >= lower_bound & df[column] <= upper_bound]
+
+            logger.info(f'Succesfully removed outliers using column {column}')
+            return df_no_outliers
+        
+        except Exception as e:
+            logger.error('Error Removing outliers')
+
+    
 # Usage example
 # if __name__ == "__main__":
 #     pipeline = DataPipeline(country='Nigeria')
