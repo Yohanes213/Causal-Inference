@@ -3,6 +3,7 @@ from datetime import datetime
 import holidays
 from geopy.distance import geodesic
 import logging
+import numpy as np
 
 # Configure logger
 logger = logging.getLogger(__name__)
@@ -220,7 +221,18 @@ class DataPipeline:
         except Exception as e:
             logger.error(f"Error applying distance, duration, and speed calculations: {e}")
             return df
-
+    
+    def impute_elements(df, distance, column):
+        try:
+            for i, row in df.iterrows():
+                if pd.null(row[column]):
+                    closet_index = np.argmin(distance[i])
+                    df.at[i, column] = df.at[closet_index, column]
+            logger.info(f'Succesfully imputed {column}')
+            return df
+        
+        except Exception as e:
+            logger.error(f'Error imputing {column}')
 
 
 # Usage example
