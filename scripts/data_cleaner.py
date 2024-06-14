@@ -253,7 +253,26 @@ class DataPipeline:
         except Exception as e:
             logger.error('Error Removing outliers')
 
-    
+    def calculate_driver_to_Trip_origin(df_driver, df_completed):
+        try:
+            for index, row in df_driver.iterows():
+                order_id = row['order_id']
+                if order_id in df_completed['Trip ID'].unique():
+                    origin_lat = df_completed[df['Trip ID'] == order_id]['Origin Lat'].iloc[0]
+                    origin_lon = df_completed[df['Trip ID'] == order_id]['Origin Lon'].iloc[0]
+
+                    origin = (origin_lat, origin_lon)
+
+                    driver_loc = (row['lat'], row['lng'])
+
+                    df_driver.at[index, 'Distance From Trip Origin'] = geodesic(origin, driver_loc).km
+
+            logger.info('Sucessfuly Complted calculating the distance from the driver location to trip origin')
+            return df_driver
+
+        except Exception as e:
+            logger.error("Error Calculating the distance from the driver location to trip origin")
+
 # Usage example
 # if __name__ == "__main__":
 #     pipeline = DataPipeline(country='Nigeria')
