@@ -4,6 +4,8 @@
 Gokada, the largest last-mile delivery service in Nigeria, has partnered with motorbike owners and drivers to deliver parcels across Lagos. With over a million deliveries completed in less than a year and a fleet of over 1200 riders, Gokada faces the challenge of optimizing the placement of pilots (drivers) to meet the high demand effectively. This project aims to understand the primary causes of unfulfilled delivery requests and recommend driver locations that increase the fraction of completed orders, thereby enhancing client satisfaction and business growth.
 
 ### Data
+
+
 | Column | Non-Null Count | Dtype |
 |-----------------|-----------------|-----------------|
 | Trip ID  | 536020  | int64  |
@@ -11,6 +13,8 @@ Gokada, the largest last-mile delivery service in Nigeria, has partnered with mo
 | Trip Destination  | 536020  | address  |
 | Trip Start Time   | 536020 | timestamp |
 | Trip End Time   | 536020 | timestamp |
+
+
 
 | Column | Non-Null Count | Dtype |
 |-----------------|-----------------|-----------------|
@@ -22,3 +26,37 @@ Gokada, the largest last-mile delivery service in Nigeria, has partnered with mo
 | lng   | 1557740 | float64 |
 | created_at  | 0  | float64  |
 | updated_at  | 0  | float64  |
+
+
+### Installation
+
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/yourusername/Causal-Inference.git
+   cd Causal-Inference
+   ```
+2. Install dependencies:
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+### Usage
+
+##### Data Cleaning and Processing
+  - Run the data cleaning script to preprocess and clean the data:
+  ```sh
+  python scripts/data_cleaner.py
+  ```
+#### Web Application
+Open the index.html file in a web browser. Enter the order_id to visualize the respective driver's location on a map.
+
+![1Screenshot from 2024-06-12 19-21-04](https://github.com/Yohanes213/Causal-Inference/assets/99422479/ab483b84-a12e-41bf-b783-292cc3256541)
+
+
+### Contributions
+
+Contributions to this project are welcome.
+
+### License
+
+This project is licensed under the MIT License.
