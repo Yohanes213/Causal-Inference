@@ -4,7 +4,7 @@ import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.join("../Causal-Inference/scripts/")))
-from data_cleaner import DataPipeline
+from data_pipeline import DataPipeline
 
 app = Flask(__name__)
 CORS(app)  # This will enable CORS for all routes
