@@ -10,6 +10,11 @@ pipeline = DataPipeline('Nigeria')
 
 class TestDataPipeline(unittest.TestCase):
 
+    def test_read_file(self):
+        path = 'tests/sampled_df.csv'
+        df = pipeline.read_data(path)
+        self.assertEqual(len(df),7)
+
     def test_is_weekend(self):
         date = datetime(2023, 1, 1)  # Sunday
         self.assertTrue(pipeline.is_weekend(date))
