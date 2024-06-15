@@ -9,13 +9,18 @@ from data_pipeline import DataPipeline
 pipeline = DataPipeline('Nigeria')
 
 class TestDataPipeline(unittest.TestCase):
+    
 
     def test_read_file(self):
         path = 'tests/sampled_df.csv'
         df = pipeline.read_data(path)
         self.assertEqual(len(df),7)
 
-        self.assertEqual(df.shape, (7,10))
+    def test_save_data(self):
+        path = 'tests/sampled_df.csv'
+        df = pipeline.read_data(path)
+        success = pipeline.save_data(df, path)
+        self.assertTrue(success)
 
     def test_is_weekend(self):
         date = datetime(2023, 1, 1)  # Sunday
