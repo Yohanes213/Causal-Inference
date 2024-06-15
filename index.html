@@ -18,9 +18,17 @@
             maxZoom: 18
         }).addTo(map);
 
+        let originMarker, destMarker, acceptedDriversMarkers = [], rejectedDriversMarkers = [];
+
         function trackOrder() {
             const orderId = document.getElementById('order_id').value;
             console.log('Tracking order:', orderId); // Debugging
+
+            // Clear existing markers
+            if (originMarker) map.removeLayer(originMarker);
+            if (destMarker) map.removeLayer(destMarker);
+            acceptedDriversMarkers.forEach(marker => map.removeLayer(marker));
+            rejectedDriversMarkers.forEach(marker => map.removeLayer(marker));
 
             fetch(`http://127.0.0.1:5000/order/${orderId}`)
                 .then(response => {
@@ -38,8 +46,8 @@
                     console.log('Order details:', order); // Debugging
                     const origin = [order[0].origin_lat, order[0].origin_lon];
                     const dest = [order[0].dest_lat, order[0].dest_lon];
-                    L.marker(origin).addTo(map).bindPopup('Origin').openPopup();
-                    L.marker(dest).addTo(map).bindPopup('Destination').openPopup();
+                    originMarker = L.marker(origin, {icon: greenIcon}).addTo(map).bindPopup('Origin').openPopup();
+                    destMarker = L.marker(dest, {icon: redIcon}).addTo(map).bindPopup('Destination').openPopup();
                 })
                 .catch(error => {
                     console.error('Error fetching order:', error); // Debugging
@@ -61,10 +69,12 @@
                     }
                     console.log('Driver details:', data); // Debugging
                     data.accepted_driver.forEach(coord => {
-                        L.marker(coord).addTo(map).bindPopup('Accepted Driver').openPopup();
+                        const marker = L.marker(coord, {icon: orangeIcon}).addTo(map).bindPopup('Accepted Driver').openPopup();
+                        acceptedDriversMarkers.push(marker);
                     });
                     data.rejected_drivers.forEach(coord => {
-                        L.marker(coord).addTo(map).bindPopup('Rejected Driver').openPopup();
+                        const marker = L.marker(coord).addTo(map).bindPopup('Rejected Driver').openPopup();
+                        rejectedDriversMarkers.push(marker);
                     });
                 })
                 .catch(error => {
@@ -72,6 +82,28 @@
                     alert('Driver data not found');
                 });
         }
+
+        // Define custom icons
+        const greenIcon = new L.Icon({
+            iconUrl: 'https://leafletjs.com/examples/custom-icons/leaf-green.png',
+            iconSize: [38, 95],
+            iconAnchor: [22, 94],
+            popupAnchor: [-3, -76],
+        });
+
+        const redIcon = new L.Icon({
+            iconUrl: 'https://leafletjs.com/examples/custom-icons/leaf-red.png',
+            iconSize: [38, 95],
+            iconAnchor: [22, 94],
+            popupAnchor: [-3, -76],
+        });
+
+        const orangeIcon = new L.Icon({
+            iconUrl: 'https://leafletjs.com/examples/custom-icons/leaf-orange.png',
+            iconSize: [38, 95],
+            iconAnchor: [22, 94],
+            popupAnchor: [-3, -76],
+        });
     </script>
 </body>
 </html>
