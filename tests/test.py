@@ -15,6 +15,8 @@ class TestDataPipeline(unittest.TestCase):
         df = pipeline.read_data(path)
         self.assertEqual(len(df),7)
 
+        self.assertEqual(df.shape, (7,10))
+
     def test_is_weekend(self):
         date = datetime(2023, 1, 1)  # Sunday
         self.assertTrue(pipeline.is_weekend(date))
@@ -37,4 +39,4 @@ class TestDataPipeline(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+   unittest.main()
