@@ -21,7 +21,7 @@ class DataPipeline:
         """
         Initializes the DataPipeline class.
 
-        Params:
+        Parameters:
             country (str): The country for holiday calculations. Default is 'Nigeria'.
         """
         self.country = country
@@ -32,7 +32,7 @@ class DataPipeline:
         """
         Reads a CSV file and returns a DataFrame.
 
-        Params:
+        Parameters:
             path (str): The path to the file.
 
         Returns:
@@ -48,9 +48,9 @@ class DataPipeline:
         
     def save_data(self, df, path):
         """
-        Save a DataFrame to a file.
+        Saves a DataFrame to a file.
 
-        Params:
+        Parameters:
             df (pd.DataFrame): The DataFrame to be saved.
             path (str): The path where the DataFrame should be saved.
 
@@ -65,12 +65,11 @@ class DataPipeline:
             logger.error(f"Error saving the DataFrame to {path}: {e}")
             return False
 
-
     def is_weekend(self, date):
         """
         Checks if a given date is a weekend.
 
-        Params:
+        Parameters:
             date (datetime): The date to check.
 
         Returns:
@@ -86,7 +85,7 @@ class DataPipeline:
         """
         Checks if a given date is a holiday.
 
-        Params:
+        Parameters:
             date (datetime): The date to check.
 
         Returns:
@@ -102,7 +101,7 @@ class DataPipeline:
         """
         Changes specified columns to datetime format in the DataFrame.
 
-        Params:
+        Parameters:
             df (pd.DataFrame): The DataFrame containing the data.
             date_columns (list): A list of column names to be converted to datetime.
 
@@ -118,18 +117,16 @@ class DataPipeline:
             logger.error(f"Error converting columns to datetime: {e}")
             return df
         
-        
     def calculate_distance(self, origin_str, destination_str):
         """
-        Calculate the distance from the lat and lon.
+        Calculates the distance between two geographic coordinates.
 
-        params:
-            df (pd.DataFrmae): The dataframe containing the data.
-            origin_str (str): The data containing the origin lat and lon.
-            destination_str: The data containing the destination lat and lon.
-        
+        Parameters:
+            origin_str (str): The string containing the origin latitude and longitude in "lat,lon" format.
+            destination_str (str): The string containing the destination latitude and longitude in "lat,lon" format.
+
         Returns:
-            distance (float): The calculated distance in km. 
+            float: The calculated distance in kilometers.
         """
         try: 
             origin_lat, origin_lon = map(float, origin_str.split(","))
@@ -144,49 +141,76 @@ class DataPipeline:
         except Exception as e:
             logger.error(f"Error converting {origin_str, destination_str}: {e}")
 
-    def calculate_duration(self, df,start_time, end_time):
+    def calculate_duration(self, df, start_time, end_time):
         """
-        Calculate the duration in hours.
+        Calculates the duration in hours between two datetime columns in the DataFrame.
 
-        params:
-            df (pd.DataFrmae): The dataframe containing the data.
-            start_time (pd.DataFrame): The data containing the start time.
-            end_time (pd.DataFrame): The data containing the end time.
-        
+        Parameters:
+            df (pd.DataFrame): The DataFrame containing the data.
+            start_time (str): The column name containing the start time.
+            end_time (str): The column name containing the end time.
+
         Returns:
-            duration (float): The duration time 
+            pd.Series: The duration in hours for each row.
         """
-
         try:
-            return (df[end_time] - df[start_time])/ pd.Timedelta(hours=1)
+            return (df[end_time] - df[start_time]) / pd.Timedelta(hours=1)
         except Exception as e:
-            logger.error(f"Error Calucation the duration for {start_time} {end_time}: {e}")
+            logger.error(f"Error calculating the duration for {start_time} {end_time}: {e}")
 
-    
-    def remove_columns(df, columns):
+    def remove_columns(self, df, columns):
+        """
+        Removes specified columns from the DataFrame.
+
+        Parameters:
+            df (pd.DataFrame): The DataFrame from which columns are to be removed.
+            columns (list): The list of column names to be removed.
+
+        Returns:
+            pd.DataFrame: The DataFrame with specified columns removed.
+        """
         try:
             df.drop(columns=columns, inplace=True)
-
-            logger.info(f'Successfully drop {columns}')
+            logger.info(f'Successfully dropped columns: {columns}')
             return df
         except Exception as e:
-            logger.error(f"Error dropping {columns} columns")
+            logger.error(f"Error dropping columns {columns}: {e}")
 
-            
-    def impute_elements(df, distance, column):
+    def impute_elements(self, df, distance, column):
+        """
+        Imputes missing elements in a specified column based on the nearest neighbor approach.
+
+        Parameters:
+            df (pd.DataFrame): The DataFrame containing the data.
+            distance (np.ndarray): The distance matrix to find the nearest neighbor.
+            column (str): The column name where missing values need to be imputed.
+
+        Returns:
+            pd.DataFrame: The DataFrame with imputed values in the specified column.
+        """
         try:
             for i, row in df.iterrows():
-                if pd.null(row[column]):
-                    closet_index = np.argmin(distance[i])
-                    df.at[i, column] = df.at[closet_index, column]
-            logger.info(f'Succesfully imputed {column}')
+                if pd.isnull(row[column]):
+                    closest_index = np.argmin(distance[i])
+                    df.at[i, column] = df.at[closest_index, column]
+            logger.info(f'Successfully imputed column: {column}')
             return df
-        
         except Exception as e:
-            logger.error(f'Error imputing {column}')
+            logger.error(f'Error imputing column {column}: {e}')
 
-    
-    def remove_outliers(df, column, lower_quantile = 0.25, upper_quantile = 0.75):
+    def remove_outliers(self, df, column, lower_quantile=0.25, upper_quantile=0.75):
+        """
+        Removes outliers from a specified column in the DataFrame using the IQR method.
+
+        Parameters:
+            df (pd.DataFrame): The DataFrame containing the data.
+            column (str): The column name from which to remove outliers.
+            lower_quantile (float): The lower quantile to calculate IQR. Default is 0.25.
+            upper_quantile (float): The upper quantile to calculate IQR. Default is 0.75.
+
+        Returns:
+            pd.DataFrame: The DataFrame with outliers removed based on the specified column.
+        """
         try:
             Q1 = df[column].quantile(lower_quantile)
             Q3 = df[column].quantile(upper_quantile)
@@ -196,45 +220,36 @@ class DataPipeline:
             lower_bound = Q1 - 1.5 * IQR
             upper_bound = Q3 + 1.5 * IQR
 
-            df_no_outliers = df[df[column] >= lower_bound & df[column] <= upper_bound]
-
-            logger.info(f'Succesfully removed outliers using column {column}')
+            df_no_outliers = df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]
+            logger.info(f'Successfully removed outliers using column {column}')
             return df_no_outliers
-        
         except Exception as e:
-            logger.error('Error Removing outliers')
+            logger.error(f"Error removing outliers using column {column}: {e}")
 
-    def calculate_driver_to_Trip_origin(df_driver, df_completed):
+    def calculate_driver_to_Trip_origin(self, df_driver, df_completed):
+        """
+        Calculates the distance from the driver's location to the trip origin for each driver.
+
+        Parameters:
+            df_driver (pd.DataFrame): The DataFrame containing driver information.
+            df_completed (pd.DataFrame): The DataFrame containing completed trip information.
+
+        Returns:
+            pd.DataFrame: The DataFrame with the distance from the driver's location to the trip origin added.
+        """
         try:
-            for index, row in df_driver.iterows():
+            for index, row in df_driver.iterrows():
                 order_id = row['order_id']
                 if order_id in df_completed['Trip ID'].unique():
                     origin_lat = df_completed[df_completed['Trip ID'] == order_id]['Origin Lat'].iloc[0]
                     origin_lon = df_completed[df_completed['Trip ID'] == order_id]['Origin Lon'].iloc[0]
 
                     origin = (origin_lat, origin_lon)
-
                     driver_loc = (row['lat'], row['lng'])
 
                     df_driver.at[index, 'Distance From Trip Origin'] = geodesic(origin, driver_loc).km
 
-            logger.info('Sucessfuly Complted calculating the distance from the driver location to trip origin')
+            logger.info('Successfully completed calculating the distance from the driver location to trip origin')
             return df_driver
-
         except Exception as e:
-            logger.error("Error Calculating the distance from the driver location to trip origin")
-
-
-
-# Usage example
-# if __name__ == "__main__":
-#     pipeline = DataPipeline(country='Nigeria')
-#     df = pipeline.read_data('data/nb.csv')
-
-#     if df is not None:
-#         df = pipeline.apply_weekend_holiday(df, ['Trip Start Time', 'Trip End Time'])
-#         logger.info("Weekend and holiday checks have been successfully applied to the DataFrame")
-#         print(df.head())
-#         print(df['is_holiday'].value_counts()) 
-#         print(df['is_weekend'].value_counts())  
-
+            logger.error("Error calculating the distance from the driver location to trip origin: {e}")
